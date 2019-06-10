@@ -1,0 +1,251 @@
+<div class="animated fadeIn">
+  <div class="card">
+    <div class="card-header">
+      <i class="icon-user"></i> Padres
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-sm-8">
+          <div *ngFor="let alert of listaAlertas">
+            <alert [type]="alert.type" [dismissOnTimeout]="alert.timeout">
+              {{ alert.msg }}
+            </alert>
+          </div>
+        </div>
+        <!-- 
+          <div class="col-sm-5">
+          <h4 class="card-title mb-0">Usuarios</h4>
+          <div class="small text-muted">Todos los usuarios registrados</div>
+        </div>
+        -->
+        <!--/.col-->
+        <div class="col-sm-4 d-md-block mb-2">
+          <button type="button" class="btn btn-success float-right" (click)="newFatherModal.show()"><i
+              class="icon-user-follow"></i> Nuevo
+            Padre</button>
+        </div>
+        <!--/.col-->
+      </div>
+      <!--/.row-->
+      <div class="table-responsive">
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table table-hover table-outline mb-0">
+          <thead class="tableBackground">
+            <tr>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>Dirección</th>
+              <th>Teléfono</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let father of fathers">
+              <td>{{ father.name }}</td>
+              <td>{{ father.surname }}</td>
+              <td>{{ father.adress }}</td>
+              <td>{{ father.phone1 }}</td>
+              <td class="text-center">
+                <button type="button" class="btn btn-info btn-sm" (click)="modalInfo.show()"
+                  (click)="loadInfo(father)">Info</button>
+                <button type="button" class="btn btn-warning btn-sm" (click)="myModal.show()"
+                  (click)="loadInfo(father)">Editar</button>
+                <button type="button" class="btn btn-danger btn-sm" (click)="deleteFatherModal.show()"
+                  (click)="fatherToDelete(father)">Eliminar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Editar-->
+<div bsModal #myModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-warning" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Editar Padre</h4>
+        <button type="button" class="close" (click)="myModal.hide()" aria-label="Close" #closeEditFatherModal>
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="" #registerForm="ngForm">
+          <div class="form-group">
+            <label for="Nombre">Nombre</label>
+            <input type="text" class="form-control" id="Nombre" placeholder="Ingresa el nombre.." name="name"
+              #name="ngModel" [(ngModel)]="fatherInfo.name" required pattern="[a-zA-Z ]*" maxlength="50"
+              [class.is-invalid]="!name.valid">
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="Apellido">Apellido</label>
+            <input type="text" class="form-control" id="Apellido" placeholder="Ingresa el apellido.." name="surname"
+              #surname="ngModel" [(ngModel)]="fatherInfo.surname" required pattern="[a-zA-Z ]*" maxlength="50"
+              [class.is-invalid]="!surname.valid">
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="adress">Dirección</label>
+            <input type="text" class="form-control" id="adress" placeholder="Ingresa una direccion" name="adress"
+              #adress="ngModel" [(ngModel)]="fatherInfo.adress" required pattern="[a-zA-Z0-9- ]*" maxlength="100"
+              [class.is-invalid]="!adress.valid">
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="Telefono">Telefono</label>
+            <input type="text" class="form-control" id="Telefono" placeholder="Ingresa un telefono.." name="Telefono"
+              #Telefono="ngModel" [(ngModel)]="fatherInfo.phone1" minlength="8" required pattern="[0-9]*" maxlength="9"
+              [class.is-invalid]="!Telefono.valid">
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="Telefono2">Telefono 2</label>
+            <input type="text" class="form-control" id="Telefono2" placeholder="Ingresa un telefono.." name="Telefono2"
+              #Telefono2="ngModel" [(ngModel)]="fatherInfo.phone2" minlength="8" maxlength="9" pattern="[0-9]*"
+              [class.is-invalid]="!Telefono2.valid">
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="textarea-input">Detalles</label>
+            <textarea id="textarea-input" name="textarea-input" rows="4" class="form-control" placeholder="Detalles.."
+              name="textDetails" #textDetails="ngModel" [(ngModel)]="fatherInfo.details" maxlength="250"
+              [class.is-invalid]="!textDetails.valid"></textarea>
+            <div class="invalid-feedback">
+              Excediste el maximo de caracteres.
+            </div>
+          </div>
+          <alert type="danger" *ngIf="status == 'err' && message">
+            {{message}}
+          </alert>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="myModal.hide()">Cerrar</button>
+            <button type="button" class="btn btn-warning" (click)="updateFather()"
+              [disabled]="!registerForm.form.valid">Guardar
+              cambios</button>
+          </div>
+        </form>
+      </div>
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+
+<!-- Modal Info-->
+<div bsModal #modalInfo="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalInfoLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-info" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Información Padre</h4>
+        <button type="button" class="close" (click)="modalInfo.hide()" aria-label="Close" #closeEditUserModal>
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="bd-example">
+          <dl class="row">
+            <dt class="col-sm-2">Nombre:</dt>
+            <dd class="col-sm-10">
+              <p> {{ fatherInfo.name }}</p>
+            </dd>
+            <dt class="col-sm-2">Apellido:</dt>
+            <dd class="col-sm-10">
+              <p> {{ fatherInfo.surname }}</p>
+            </dd>
+            <dt class="col-sm-2">Dirección:</dt>
+            <dd class="col-sm-10">
+              <p> {{ fatherInfo.adress }}</p>
+            </dd>
+            <dt class="col-sm-2">Teléfono:</dt>
+            <dd class="col-sm-10">
+              <p> {{ fatherInfo.phone1 }}</p>
+            </dd>
+            <dt class="col-sm-2">Teléfono:</dt>
+            <dd class="col-sm-10" *ngIf="!fatherInfo.phone2">
+              <p>No</p>
+            </dd>
+            <dd class="col-sm-10" *ngIf="fatherInfo.phone2">
+              <p>{{ fatherInfo.phone2 }}</p>
+            </dd>
+            <dt class="col-sm-2">Detalles:</dt>
+            <dd class="col-sm-10" *ngIf="!fatherInfo.details">
+              <p>No</p>
+            </dd>
+            <dd class="col-sm-10" *ngIf="fatherInfo.details">
+              <p>{{ fatherInfo.details }}</p>
+            </dd>
+            <dt class="col-sm-2">Hijo/s:</dt>
+            <dd class="col-sm-10">
+              <p *ngFor="let student of listhijos">{{ student.name }} {{ student.surname }}, Tel: {{ student.phone }}
+              </p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modalInfo.hide()">Cerrar</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+
+
+<!-- Modal Agregar-->
+<div bsModal #newFatherModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="newFatherModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-success" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Nuevo Padre</h4>
+        <button type="button" class="close" (click)="newFatherModal.hide()" aria-label="Close" #closeNewFatherModal>
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <app-alta-padre #altaPadre></app-alta-padre>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="newFatherModal.hide()">Cerrar</button>
+        <button type="button" class="btn btn-success" (click)="addFather()">Agregar
+          padre</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+
+<div bsModal #deleteFatherModal="bs-modal" class="modal fade" tabindex="-1" role="dialog"
+  aria-labelledby="deleteFatherModal" aria-hidden="true">
+  <div class="modal-dialog modal-danger" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Eliminar Padre</h4>
+        <button type="button" class="close" (click)="deleteFatherModal.hide()" aria-label="Close"
+          #closeDeleteFatherModal>
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Seguro quieres eliminar el padre: {{ fatherDelete.name }} {{ fatherDelete.surname }}?</p>
+        <small>Solo se podra eliminar a un padre que no tenga hijos registrados ni pagos registrados.</small>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="deleteFatherModal.hide()">Cerrar</button>
+        <button type="button" class="btn btn-danger" (click)="deleteFather(fatherDelete)">Eliminar
+          padre</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>

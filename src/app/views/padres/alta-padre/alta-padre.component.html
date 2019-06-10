@@ -1,0 +1,58 @@
+<form action="" #newFatherForm="ngForm">
+  <div class="form-group">
+    <label for="Nombre">Nombre</label>
+    <input type="text" class="form-control" id="Nombre" placeholder="Ingresa el nombre.." name="newName" #newName="ngModel"
+      [(ngModel)]="fatherNew.name" required pattern="[a-zA-Z ]*" maxlength="50" [class.is-invalid]="!newName.valid && newName.touched">
+    <div class="invalid-feedback">
+      Por favor ingresa informacion valida.
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="Apellido">Apellido</label>
+    <input type="text" class="form-control" id="Apellido" placeholder="Ingresa el apellido.." name="surname"
+      #surname="ngModel" [(ngModel)]="fatherNew.surname" required pattern="[a-zA-Z ]*" maxlength="50"
+      [class.is-invalid]="!surname.valid && surname.touched">
+    <div class="invalid-feedback">
+      Por favor ingresa informacion valida.
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="adress">Dirección</label>
+    <input type="text" class="form-control" id="adress" placeholder="Ingresa una direccion" name="adress"
+      #adress="ngModel" [(ngModel)]="fatherNew.adress" required pattern="[a-zA-Z0-9- ]*" maxlength="100"
+      [class.is-invalid]="!adress.valid && adress.touched">
+    <div class="invalid-feedback">
+      Por favor ingresa informacion valida.
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="Telefono">Telefono</label>
+    <input type="text" class="form-control" id="Telefono" placeholder="Ingresa un telefono.." name="Telefono"
+      #Telefono="ngModel" [(ngModel)]="fatherNew.phone1" minlength="8" required pattern="[0-9]*" maxlength="9"
+      [class.is-invalid]="!Telefono.valid && Telefono.touched">
+    <div class="invalid-feedback">
+      Por favor ingresa informacion valida.
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="Telefono2">Telefono 2</label>
+    <input type="text" class="form-control" id="Telefono2" placeholder="Ingresa un telefono.." name="Telefono2"
+      #Telefono2="ngModel" [(ngModel)]="fatherNew.phone2" minlength="8" maxlength="9" pattern="[0-9]*"
+      [class.is-invalid]="!Telefono2.valid">
+    <div class="invalid-feedback">
+      Por favor ingresa informacion valida.
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="textarea-input">Detalles</label>
+    <textarea id="textarea-input" name="textarea-input" rows="4" class="form-control" placeholder="Detalles.."
+      name="textDetails" #textDetails="ngModel" [(ngModel)]="fatherNew.details" maxlength="250"
+      [class.is-invalid]="!textDetails.valid"></textarea>
+    <div class="invalid-feedback">
+      Excediste el maximo de caracteres.
+    </div>
+  </div>
+  <alert type="danger" *ngIf="status == 'err' && message">
+    {{message}}
+  </alert>
+</form>

@@ -1,0 +1,229 @@
+<div class="animated fadeIn">
+  <div class="card">
+    <div class="card-header">
+      <i class="icon-user"></i> Usuarios
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-sm-8">
+          <div *ngFor="let alert of listaAlertas">
+            <alert [type]="alert.type" [dismissOnTimeout]="alert.timeout">
+              {{ alert.msg }}
+            </alert>
+          </div>
+        </div>
+        <!-- 
+          <div class="col-sm-5">
+          <h4 class="card-title mb-0">Usuarios</h4>
+          <div class="small text-muted">Todos los usuarios registrados</div>
+        </div>
+        -->
+        <!--/.col-->
+        <div class="col-sm-4 d-md-block mb-2">
+          <button type="button" class="btn btn-success float-right" (click)="newUserModal.show()"
+            (click)="resetNewUser()"><i class="icon-user-follow"></i> Nuevo
+            Usuario</button>
+        </div>
+        <!--/.col-->
+      </div>
+      <!--/.row-->
+      <div class="table-responsive">
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table table-hover table-outline mb-0">
+          <thead class="tableBackground">
+            <tr>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>Rol</th>
+              <th>Estado</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of users">
+              <td>{{ user.name }}</td>
+              <td>{{ user.surname }}</td>
+              <td *ngIf="user.role === 'admin'">Administrador</td>
+              <td *ngIf="user.role === 'teacher'">Profe</td>
+              <td *ngIf="user.state === true ">Activo</td>
+              <td *ngIf="user.state === false ">Inactivo</td>
+              <td class="text-center">
+                <button type="button" class="btn btn-warning btn-sm" (click)="myModal.show()"
+                  (click)="loadInfo(user)">Editar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div bsModal #myModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-warning" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Editar Usuario</h4>
+        <button type="button" class="close" (click)="myModal.hide()" aria-label="Close" #closeEditUserModal>
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="" #registerForm="ngForm">
+          <div class="form-group">
+            <label for="Nombre">Nombre</label>
+            <input type="text" class="form-control" id="Nombre" placeholder="Ingresa el nombre.." name="name"
+              #name="ngModel" [(ngModel)]="userInfo.name" required pattern="[a-zA-Z ]*"
+              [class.is-invalid]="!name.valid">
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="Apellido">Apellido</label>
+            <input type="text" class="form-control" id="Apellido" placeholder="Ingresa el apellido.." name="surname"
+              #surname="ngModel" [(ngModel)]="userInfo.surname" required pattern="[a-zA-Z ]*"
+              [class.is-invalid]="!surname.valid">
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="Alias">Alias<small> (Se utiliza para iniciar sesion)</small></label>
+            <input type="text" class="form-control" id="Alias" placeholder="Ingresa un alias.." name="alias"
+              #alias="ngModel" [(ngModel)]="userInfo.alias" required pattern="[a-zA-Z]*"
+              [class.is-invalid]="!alias.valid">
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="password">Contraseña</label>
+            <input type="password" class="form-control" id="password" placeholder="Ingresa una contraseña.."
+              name="password" #password="ngModel" [(ngModel)]="userInfo.password" minlength="4">
+            <span class="help-block">Si ingresas una contraseña se cambiará la actual.</span>
+          </div>
+          <div class="form-group">
+            <label for="selectTipo">Tipo</label>
+            <select id="selectTipo" name="selectTipo" class="form-control" name="role" #role="ngModel"
+              [(ngModel)]="userInfo.role" required [class.is-invalid]="!role.valid">
+              <option value="admin">Administrador</option>
+              <option value="teacher">Profe</option>
+            </select>
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="selectEstado">Estado</label>
+            <select id="selectEstado" name="selectEstado" class="form-control" name="state" #state="ngModel"
+              [(ngModel)]="userInfo.state" required [class.is-invalid]="!state.valid">
+              <option [ngValue]="true">Activo</option>
+              <option [ngValue]="false">Inactivo</option>
+            </select>
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <alert type="danger" *ngIf="status == 'err' && message">
+            {{message}}
+          </alert>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="myModal.hide()">Cerrar</button>
+            <button type="button" class="btn btn-warning" (click)="updateUser()"
+              [disabled]="!registerForm.form.valid">Guardar
+              cambios</button>
+          </div>
+        </form>
+      </div>
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+<!-- /.modal Info -->
+
+<div bsModal #newUserModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="newUserModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-success" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Nuevo Usuario</h4>
+        <button type="button" class="close" (click)="newUserModal.hide()" aria-label="Close" #closeNewUserModal>
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="" #newUserForm="ngForm">
+          <div class="form-group">
+            <label for="newName">Nombre</label>
+            <input type="text" class="form-control" id="newName" placeholder="Ingresa el nombre.." name="newName"
+              #newName="ngModel" [(ngModel)]="newUser.name" required pattern="[a-zA-Z]*"
+              [class.is-invalid]="!newName.valid && newName.touched">
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="newSurname">Apellido</label>
+            <input type="text" class="form-control" id="newSurname" placeholder="Ingresa el apellido.."
+              name="newSurname" #newSurname="ngModel" [(ngModel)]="newUser.surname" required pattern="[a-zA-Z]*"
+              [class.is-invalid]="!newSurname.valid && newSurname.touched">
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="newAlias">Alias <small>(Se utiliza para iniciar sesion)</small></label>
+            <input type="text" class="form-control" id="newAlias" placeholder="Ingresa un alias.." name="newAlias"
+              #newAlias="ngModel" [(ngModel)]="newUser.alias" required pattern="[a-zA-Z]*"
+              [class.is-invalid]="!newAlias.valid && newAlias.touched">
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="newPassword">Contraseña</label>
+            <input type="password" class="form-control" id="newPassword" placeholder="Ingresa una contraseña.."
+              name="newPassword" #newPassword="ngModel" [(ngModel)]="newUser.password" required minlength="4"
+              [class.is-invalid]="!newPassword.valid && newPassword.touched">
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="newSelectTipo">Tipo</label>
+            <select id="newSelectTipo" name="newSelectTipo" class="form-control" name="newSelectTipo"
+              #newSelectTipo="ngModel" [(ngModel)]="newUser.role"
+              [class.is-invalid]="!newSelectTipo.valid && newSelectTipo.touched" required>
+              <option value="admin">Administrador</option>
+              <option value="teacher">Profe</option>
+            </select>
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="newSelectEstado">Estado</label>
+            <select id="newSelectEstado" name="newSelectEstado" class="form-control" name="newSelectEstado"
+              #newSelectEstado="ngModel" [(ngModel)]="newUser.state"
+              [class.is-invalid]="!newSelectEstado.valid && newSelectEstado.touched" required>
+              <option [ngValue]="true">Activo</option>
+              <option [ngValue]="false">Inactivo</option>
+            </select>
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <alert type="danger" *ngIf="status == 'err' && message">
+            {{message}}
+          </alert>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="newUserModal.hide()">Cerrar</button>
+        <button type="button" class="btn btn-success" (click)="addUser()" [disabled]="!newUserForm.form.valid">Agregar
+          usuario</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>

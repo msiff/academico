@@ -1,0 +1,188 @@
+<div class="animated fadeIn">
+  <div class="card">
+    <div class="card-header">
+      <i class="icon-user"></i> Alumnos
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-sm-8">
+          <div *ngFor="let alert of listaAlertas">
+            <alert [type]="alert.type" [dismissOnTimeout]="alert.timeout">
+              {{ alert.msg }}
+            </alert>
+          </div>
+        </div>
+        <!-- 
+            <div class="col-sm-5">
+            <h4 class="card-title mb-0">Usuarios</h4>
+            <div class="small text-muted">Todos los usuarios registrados</div>
+          </div>
+          -->
+        <!--/.col-->
+        <div class="col-sm-4 d-md-block mb-2">
+          <button type="button" class="btn btn-success float-right" (click)="newStudentModal.show()"
+            (click)="resetStudent()"><i class="icon-user-follow"></i> Nuevo
+            Alumno</button>
+        </div>
+        <!--/.col-->
+      </div>
+      <!--/.row-->
+      <div class="table-responsive">
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table table-hover table-outline mb-0">
+          <thead class="tableBackground">
+            <tr>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>Género</th>
+              <th>Teléfono</th>
+              <th>Padre</th>
+              <th>Estado</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let student of students">
+              <td>{{ student.name }}</td>
+              <td>{{ student.surname }}</td>
+              <td>{{ student.gender }}</td>
+              <td>{{ student.phone }}</td>
+              <td>{{ student.father.name}} {{ student.father.surname}}</td>
+              <td *ngIf="student.state === true ">Activo</td>
+              <td *ngIf="student.state === false ">Inactivo</td>
+              <td class="text-center">
+                <button type="button" class="btn btn-warning btn-sm" (click)="editStudent(student)">Editar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div bsModal #newStudentModal="bs-modal" class="modal fade" tabindex="-1" role="dialog"
+  aria-labelledby="newStudentModal" aria-hidden="true">
+  <div class="modal-dialog modal-success" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Nuevo Alumno</h4>
+        <button type="button" class="close" (click)="newStudentModal.hide()" aria-label="Close" #closeNewStudentModal>
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="" #newUserForm="ngForm">
+          <div class="form-group">
+            <label for="newName">Nombre</label>
+            <input type="text" class="form-control" id="newName" placeholder="Ingresa el nombre.." name="newName"
+              #newName="ngModel" [(ngModel)]="student.name" required pattern="[a-zA-Z ]*"
+              [class.is-invalid]="!newName.valid && newName.touched">
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="newSurname">Apellido</label>
+            <input type="text" class="form-control" id="newSurname" placeholder="Ingresa el apellido.."
+              name="newSurname" #newSurname="ngModel" [(ngModel)]="student.surname" required pattern="[a-zA-Z ]*"
+              [class.is-invalid]="!newSurname.valid && newSurname.touched">
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="newBirthDate">Fecha de nacimiento</label>
+            <input type="text" placeholder="Fecha de nacimiento" class="form-control" name="newBirthDate"
+              #newBirthDate="ngModel" [(ngModel)]="student.birthDate" required autocomplete="false" 
+              [class.is-invalid]="!newBirthDate.valid && newBirthDate.touched" bsDatepicker
+              [bsConfig]="{ dateInputFormat: 'YYYY/MM/DD' }" placement="bottom">
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="Telefono">Teléfono</label>
+            <input type="text" class="form-control" id="Telefono" placeholder="Ingresa un telefono.." name="Telefono"
+              #Telefono="ngModel" [(ngModel)]="student.phone" minlength="8" pattern="[0-9]*" maxlength="9"
+              [class.is-invalid]="!Telefono.valid && Telefono.touched">
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="selectTipo">Género</label>
+            <select id="selectTipo" name="selectTipo" class="form-control" name="role" #role="ngModel"
+              [(ngModel)]="student.gender" required [class.is-invalid]="!role.valid && role.touched">
+              <option value="Femenino">Femenino</option>
+              <option value="Masculino">Masculino</option>
+            </select>
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="selectEstado">Estado</label>
+            <select id="selectEstado" name="selectEstado" class="form-control" name="state" #state="ngModel"
+              [(ngModel)]="student.state" required [class.is-invalid]="!state.valid">
+              <option [ngValue]="true">Activo</option>
+              <option [ngValue]="false">Inactivo</option>
+            </select>
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="Padre">Padre</label>
+            <ng-select [(ngModel)]="student.father" name="padre">
+              <ng-option *ngFor="let father of fathers" [value]="father._id" placeholder="Selecciona un padre">
+                {{father.name}} {{father.surname}}</ng-option>
+              <ng-template ng-header-tmp>
+                <button (click)="newFatherModal.show()" class="btn btn-success btn-sm">Nuevo Padre</button>
+              </ng-template>
+            </ng-select>
+          </div>
+          <div class="form-group">
+            <label for="textarea-input">Detalles</label>
+            <textarea id="textarea-input" name="textarea-input" rows="4" class="form-control" placeholder="Detalles.."
+              name="textDetails" #textDetails="ngModel" [(ngModel)]="student.details" maxlength="250"
+              [class.is-invalid]="!textDetails.valid"></textarea>
+            <div class="invalid-feedback">
+              Excediste el maximo de caracteres.
+            </div>
+          </div>
+          <alert type="danger" *ngIf="status == 'err' && message">
+            {{message}}
+          </alert>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="newStudentModal.hide()">Cerrar</button>
+        <button type="button" class="btn btn-success" (click)="addStudent()">Agregar
+          usuario</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+
+<!-- Modal Agregar-->
+<div bsModal #newFatherModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="newFatherModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-warning" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Nuevo Padre</h4>
+        <button type="button" class="close" (click)="newFatherModal.hide()" aria-label="Close" #closeNewFatherModal>
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <app-alta-padre #altaPadre></app-alta-padre>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="newFatherModal.hide()">Cerrar</button>
+        <button type="button" class="btn btn-success" (click)="addFather()">Agregar
+          padre</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
