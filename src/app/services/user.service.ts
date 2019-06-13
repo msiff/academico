@@ -54,6 +54,13 @@ export class UserService {
         // return this._http.post(this.url + 'loginUser', params, { headers: headers }).map(res => res.json());
         return this._http.post(this.url + 'registrarUser', params, { headers: headers }).pipe(map(res => res.json()));
     }
+
+    getUsersActive() {
+        // user lleva el usuario que esta logueado al momento de hacer la peticion, para poder dejar registro en el sv.
+        const user = JSON.stringify(this.getIdentity());
+        const headers = new Headers({ 'Content-Type': 'application/json', 'Authorization': user });
+        return this._http.get(this.url + 'getUsersActive', { headers: headers }).pipe(map(res => res.json()));
+    }
 }
 
 
