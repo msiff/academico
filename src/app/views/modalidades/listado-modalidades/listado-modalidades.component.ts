@@ -27,7 +27,7 @@ export class ListadoModalidadesComponent implements OnInit, OnDestroy {
   public usersActive = new Array<User>();
   public status;
   public message;
-  public modalityNew = new Modality('', '', '', {} as TipoModality, null, true, new Array<User>(), null);
+  public modalityNew = new Modality('', '', null, null, null, true, new Array<User>(), null);
   public modalityInfo = new Modality('', '', '', {} as TipoModality, null, true, new Array<User>(), null);
   public modalityDelete = new Modality('', '', '', {} as TipoModality, null, true, new Array<User>(), null);
 
@@ -53,12 +53,12 @@ export class ListadoModalidadesComponent implements OnInit, OnDestroy {
   bsConfig: Partial<BsDatepickerConfig>;
 
   constructor(private _modalityService: ModalityService, private _tipoModalityService: TipoModalityService,
-      private _userService: UserService) { }
+    private _userService: UserService) { }
 
   ngOnInit() {
     // opciones del datepicker
     this.bsConfig = Object.assign({}, {
-      minMode : this.minMode,
+      minMode: this.minMode,
       dateInputFormat: 'YYYY'
     });
     // dt options son las opciones de la datatable.
@@ -100,7 +100,6 @@ export class ListadoModalidadesComponent implements OnInit, OnDestroy {
         } else {
           this.modalitys = response.modalitys;
           this.dtTrigger.next();
-          console.log(this.modalitys);
         }
       },
       err => {
@@ -138,7 +137,7 @@ export class ListadoModalidadesComponent implements OnInit, OnDestroy {
         if (!response.users) {
           this.agregarAlerta('danger', response.message);
         } else {
-          this.usersActive = response.users;
+          this.usersActive = this.bindNameUser(response.users);
         }
       },
       err => {
@@ -153,34 +152,39 @@ export class ListadoModalidadesComponent implements OnInit, OnDestroy {
 
   // Agrega un elemento
   add() {
-    this._modalityService.addModality(this.modalityNew).subscribe(
-      response => {
-        if (response.type !== 'ok') {
-          this.status = 'err';
-          this.message = response.message;
-        } else {
-          this.agregarAlerta('success', response.message);
-          this.getRerender();
-          this.modalityNew = new Modality('', '', '', {} as TipoModality, null, true, new Array<User>(), null);
-          this.closeModalNew();
+    if (this.modalityNew.teachers.length === 0 || this.modalityNew.type._id === '' || this.modalityNew.dance === '') {
+      this.status = 'err';
+      this.message = 'Debes ingresar todos los datos!';
+    } else {
+      this._modalityService.addModality(this.modalityNew).subscribe(
+        response => {
+          if (response.type !== 'ok') {
+            this.status = 'err';
+            this.message = response.message;
+          } else {
+            this.agregarAlerta('success', response.message);
+            this.getRerender();
+            this.modalityNew = new Modality('', '', null, null, null, true, new Array<User>(), null);
+            this.closeModalNew();
+          }
+        },
+        err => {
+          const errorMessage = <any>err;
+          if (errorMessage) {
+            const body = JSON.parse(err._body);
+            this.message = body.message;
+            this.status = body.type;
+          }
         }
-      },
-      err => {
-        const errorMessage = <any>err;
-        if (errorMessage) {
-          const body = JSON.parse(err._body);
-          this.message = body.message;
-          this.status = body.type;
-        }
-      }
-    );
+      );
+    }
   }
 
   // Updatea el elemento
   update() {
     this._modalityService.updateModality(this.modalityInfo).subscribe(
       response => {
-        if (!response.tipoModality) {
+        if (!response.modality) {
           this.status = 'err';
           this.message = response.message;
         } else {
@@ -223,6 +227,21 @@ export class ListadoModalidadesComponent implements OnInit, OnDestroy {
     );
   }
 
+  // Esta funcion agrega un atributo al objeto User que incluye su nombre y apellido. Se usa en el ng-select,
+  // para poder mostrar en la lista el nombre y apellido, ya que solo se puede seleccionar 1 atributo del objeto
+  // para mostrar. hay otras formas de hacerlo como usar los option del select, pero cuando es multiple seleccion
+  // no funciona el binding del back al front.
+  // Se usa en el ng-select del editar modalidad pero tambien en el loadInfo de modalidad, que crea el objeto que carga
+  // el modal editar modalidad. Se le debe agregar el bindName a los profesores de la modalidad. Si no no hace binding.
+  bindNameUser(listt: Array<any>) {
+    for (const user in listt) {
+      if (listt.hasOwnProperty(user)) {
+        listt[user].bindName = listt[user].name + ' ' + listt[user].surname;
+      }
+    }
+    return listt;
+  }
+
   // Este metodo destruye la datatable que habia y crea una nueva actualizada.
   rerender(): void {
     this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
@@ -234,7 +253,7 @@ export class ListadoModalidadesComponent implements OnInit, OnDestroy {
   // Asigno desde el boton eliminar del datatable el objecto que se desea eliminar y lo guardo en memoria
   // para despues ser llamado desde otra funcion en el modal.
   deleteItem(object) {
-    object = <TipoModality> object;
+    object = <TipoModality>object;
     this.modalityDelete = object;
   }
 
@@ -263,14 +282,14 @@ export class ListadoModalidadesComponent implements OnInit, OnDestroy {
 
   // Carga la info del objeto seleccionado del datatable al objeto para mostrar en el modal.
   loadInfo(object) {
-    object = <TipoModality> object;
+    object = <TipoModality>object;
     this.modalityInfo._id = object._id;
     this.modalityInfo.name = object.name;
     this.modalityInfo.dance = object.dance;
     this.modalityInfo.type = object.type;
     this.modalityInfo.year = object.year;
     this.modalityInfo.state = object.state;
-    this.modalityInfo.teachers = object.teachers;
+    this.modalityInfo.teachers = this.bindNameUser(object.teachers);
     this.modalityInfo.createdAt = object.createdAt;
   }
 

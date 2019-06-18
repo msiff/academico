@@ -82,32 +82,27 @@
           <div class="form-group">
             <label for="editName">Nombre</label>
             <input type="text" class="form-control" id="editName" placeholder="Ingresa el nombre.." name="editName"
-              #editName="ngModel" [(ngModel)]="modalityInfo.name" required pattern="[a-zA-Z ]*" maxlength="50"
+              #editName="ngModel" [(ngModel)]="modalityInfo.name" required pattern="[a-zA-Zº1-9 ]*" maxlength="50"
               [class.is-invalid]="!editName.valid && editName.touched">
             <div class="invalid-feedback">
               Por favor ingresa informacion valida.
             </div>
           </div>
           <div class="form-group">
-            <label for="editSelectDance">Danza</label>
-            <select id="selectEstado" class="form-control" name="editSelectDance" #editSelectDance="ngModel"
-              [(ngModel)]="modalityInfo.dance" required [class.is-invalid]="!editSelectDance.valid">
-              <option [ngValue]="Infantil">Infantil</option>
-              <option [ngValue]="Jazz">Jazz</option>
-              <option [ngValue]="Arabe">Arabe</option>
-              <option [ngValue]="Clasico">Clasico</option>
-              <option [ngValue]="RitmosLatinos">Ritmos Latinos</option>
-            </select>
+            <label for="editDance">Danza</label>
+            <ng-select [items]="danzas" name="editDance" #editDance="ngModel" [(ngModel)]="modalityInfo.dance"
+              placeholder="Selecciona una danza.." required [class.is-invalid]="!editDance.valid && editDance.touched">
+            </ng-select>
             <div class="invalid-feedback">
               Por favor ingresa informacion valida.
             </div>
           </div>
           <div class="form-group">
             <label for="editSelectTipoModalidad">Tipo Modalidad</label>
-            <ng-select [(ngModel)]="modalityInfo.type._id" name="editTipoModalidad">
-              <ng-option *ngFor="let tipoModality of tipoModalitys" [value]="tipoModality._id"
-                placeholder="Selecciona un tipo de modalidad">
-                {{tipoModality.type}}, Precio: {{tipoModality.price}}</ng-option>
+            <ng-select name="editTipoModalidad" #editTipoModalidad="ngModel" [(ngModel)]="modalityInfo.type._id"
+              placeholder="Selecciona un tipo de modalidad.." required>
+              <ng-option *ngFor="let tipoModality of tipoModalitysActives" [value]="tipoModality._id">
+                {{tipoModality.type}}, Precio: {{tipoModality.price | currency}}</ng-option>
             </ng-select>
           </div>
           <div class="form-group">
@@ -115,7 +110,7 @@
             <input type="text" placeholder="Ańo de curso" class="form-control" name="editYear" #editYear="ngModel"
               [(ngModel)]="modalityInfo.year" required autocomplete="false"
               [class.is-invalid]="!editYear.valid && editYear.touched" bsDatepicker
-              [bsConfig]="{ dateInputFormat: 'YYYY/MM/DD' }" placement="bottom">
+              [bsConfig]="{ dateInputFormat: 'YYYY' }" placement="bottom">
             <div class="invalid-feedback">
               Por favor ingresa informacion valida.
             </div>
@@ -134,10 +129,9 @@
           </div>
           <div class="form-group">
             <label for="Profesor">Profesor/es</label>
-            <ng-select [(ngModel)]="modalityInfo.teachers._id" name="Profesor">
-              <ng-option *ngFor="let user of users" [value]="user._id"
-                placeholder="Selecciona uno o varios profesores..">
-                {{user.name}} {{user.surname}}</ng-option>
+            <ng-select [items]="usersActive" bindLabel="bindName" bindValue="" [(ngModel)]="modalityInfo.teachers" 
+            name="editProfesor" [multiple]="true" [closeOnSelect]="false"
+              placeholder="Selecciona uno o varios profesores.." required>
             </ng-select>
           </div>
           <alert type="danger" *ngIf="status == 'err' && message">
@@ -224,38 +218,26 @@
           <div class="form-group">
             <label for="Nombre">Nombre</label>
             <input type="text" class="form-control" id="Nombre" placeholder="Ingresa el nombre.." name="name"
-              #name="ngModel" [(ngModel)]="modalityNew.name" required pattern="[a-zA-Z ]*" maxlength="50"
+              #name="ngModel" [(ngModel)]="modalityNew.name" required pattern="[a-zA-Zº1-9 ]*" maxlength="50"
               [class.is-invalid]="!name.valid && name.touched">
             <div class="invalid-feedback">
               Por favor ingresa informacion valida.
             </div>
           </div>
-          <!--
           <div class="form-group">
-            <label for="selectDanceee">Danza</label>
-            <select id="selectDanceee" class="form-control" name="selectDance" #selectDance="ngModel"
-              [(ngModel)]="modalityNew.dance" required [class.is-invalid]="!selectDance.valid">
-              <option [ngValue]="Infantil">Infantil</option>
-              <option [ngValue]="Jazz">Jazz</option>
-              <option [ngValue]="Arabe">Arabe</option>
-              <option [ngValue]="Clasico">Clasico</option>
-              <option [ngValue]="RitmosLatinos">Ritmos Latinos</option>
-            </select>
+            <label for="Dance">Danza</label>
+            <ng-select [items]="danzas" [(ngModel)]="modalityNew.dance" name="Dance" #Dance="ngModel"
+              placeholder="Selecciona una danza.." required [class.is-invalid]="!Dance.valid && Dance.touched">
+            </ng-select>
             <div class="invalid-feedback">
               Por favor ingresa informacion valida.
             </div>
           </div>
-           -->
-          <div class="form-group">
-            <label for="Dance">Danza</label>
-            <ng-select [items]="danzas" [(ngModel)]="modalityNew.dance" name="Dance" required>
-            </ng-select>
-          </div>
           <div class="form-group">
             <label for="Padre">Tipo Modalidad</label>
-            <ng-select [(ngModel)]="modalityNew.type" name="padre">
-              <ng-option *ngFor="let tipoModality of tipoModalitysActives" [value]="tipoModality._id"
-                placeholder="Selecciona un tipo de modalidad">
+            <ng-select [(ngModel)]="modalityNew.type" name="padre" placeholder="Selecciona un tipo de modalidad.."
+              required>
+              <ng-option *ngFor="let tipoModality of tipoModalitysActives" [value]="tipoModality._id">
                 {{tipoModality.type}}, Precio: {{tipoModality.price | currency}}</ng-option>
             </ng-select>
           </div>
@@ -282,9 +264,9 @@
           </div>
           <div class="form-group">
             <label for="Profesor">Profesor/es</label>
-            <ng-select [(ngModel)]="modalityNew.teachers" name="Profesor" [multiple]="true" [closeOnSelect]="false">
-              <ng-option *ngFor="let user of usersActive" [value]="user._id"
-                placeholder="Selecciona uno o varios profesores..">
+            <ng-select [(ngModel)]="modalityNew.teachers" name="Profesor" [multiple]="true" [closeOnSelect]="false"
+              placeholder="Selecciona uno o varios profesores.." required>
+              <ng-option *ngFor="let user of usersActive" [value]="user._id">
                 {{user.name}} {{user.surname}}</ng-option>
             </ng-select>
           </div>
