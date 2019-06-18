@@ -6,7 +6,7 @@ import { map } from 'rxjs/operators';
 import { GLOBAL } from './global.service';
 
 @Injectable()
-export class TipoModalityService {
+export class ModalityService {
     public url: string;
     public identity;
 
@@ -58,7 +58,7 @@ export class TipoModalityService {
     }
 
     // Obtiene los tipos de modalidades activos
-    getTipoModalitysActive() {
+    getModalitysActive() {
         // user lleva el usuario que esta logueado al momento de hacer la peticion, para poder dejar registro en el sv.
         const user = JSON.stringify(this.getIdentity());
         const headers = new Headers({ 'Content-Type': 'application/json', 'Authorization': user });

@@ -147,7 +147,6 @@ export class ListadoAlumnosComponent implements OnInit, OnDestroy {
       this.status = 'err';
       this.message = 'Debes seleccionar un padre!';
     } else {
-      console.log(this.student.birthDate);
       this._studentService.addStudent(this.student).subscribe(
         response => {
           if (response.type !== 'ok') {

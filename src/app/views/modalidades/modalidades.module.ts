@@ -13,6 +13,8 @@ import { ModalidadesRouting } from './modalidades.routing';
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { DataTablesModule } from 'angular-datatables';
 import { ModalModule } from 'ngx-bootstrap/modal';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 
 @NgModule({
     declarations: [
@@ -25,7 +27,9 @@ import { ModalModule } from 'ngx-bootstrap/modal';
         ModalidadesRouting,
         AlertModule.forRoot(),
         ModalModule.forRoot(),
-        DataTablesModule
+        DataTablesModule,
+        BsDatepickerModule.forRoot(),
+        NgSelectModule
     ],
     exports: [],
     providers: [],

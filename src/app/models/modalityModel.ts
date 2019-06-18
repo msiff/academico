@@ -9,7 +9,7 @@ export class Modality {
         public type: TipoModality,
         public year: Date,
         public state: Boolean,
-        public teachers: [User],
+        public teachers: User[],
         public createdAt: Date,
     ) {}
 }

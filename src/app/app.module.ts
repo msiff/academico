@@ -47,6 +47,7 @@ import { UserService } from './services/user.service';
 import { FatherService } from './services/father.service';
 import { StudentService } from './services/student.service';
 import { TipoModalityService } from './services/tipoModality.service';
+import { ModalityService } from './services/modality.service';
 
 // Guards Personales
 import { AuthGuard } from './services/auth.guard';
@@ -85,6 +86,7 @@ import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
     FatherService,
     StudentService,
     TipoModalityService,
+    ModalityService,
     {
       provide: LocationStrategy,
       useClass: HashLocationStrategy

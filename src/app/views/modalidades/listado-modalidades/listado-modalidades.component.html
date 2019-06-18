@@ -1,3 +1,324 @@
-<p>
-  listado-modalidades works!
-</p>
+<div class="animated fadeIn">
+  <div class="card">
+    <div class="card-header">
+      <i class="icon-user"></i> Modalidades
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-sm-8">
+          <div *ngFor="let alert of listaAlertas">
+            <alert [type]="alert.type" [dismissOnTimeout]="alert.timeout">
+              {{ alert.msg }}
+            </alert>
+          </div>
+        </div>
+        <!-- 
+          <div class="col-sm-5">
+          <h4 class="card-title mb-0">Usuarios</h4>
+          <div class="small text-muted">Todos los usuarios registrados</div>
+        </div>
+        -->
+        <!--/.col-->
+        <div class="col-sm-4 d-md-block mb-2">
+          <button type="button" class="btn btn-success float-right" (click)="modalNew.show(); limpiarAlerts()"><i
+              class="icon-user-follow"></i> Nueva Modalidad</button>
+        </div>
+        <!--/.col-->
+      </div>
+      <!--/.row-->
+      <div class="table-responsive">
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table table-hover table-outline mb-0">
+          <thead class="tableBackground">
+            <tr>
+              <th>Nombre</th>
+              <th>Danza</th>
+              <th>Tipo</th>
+              <th>Precio</th>
+              <th>Año</th>
+              <th>Profesor/es</th>
+              <th>Estado</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let modality of modalitys">
+              <td>{{ modality.name }}</td>
+              <td>{{ modality.dance }}</td>
+              <td>{{ modality.type.type }}</td>
+              <td>{{ modality.type.price | currency }}</td>
+              <td>{{ modality.year | date : 'yyyy'}}</td>
+              <td>{{ modality.teachers.length }}</td>
+              <td *ngIf="modality.state">Activo</td>
+              <td *ngIf="!modality.state">Inactivo</td>
+              <td class="text-center">
+                <button type="button" class="btn btn-info btn-sm"
+                  (click)="modalInfo.show(); loadInfo(modality)">Info</button>
+                <button type="button" class="btn btn-warning btn-sm"
+                  (click)="modalEdit.show(); limpiarAlerts(); loadInfo(modality)">Editar</button>
+                <button type="button" class="btn btn-danger btn-sm" (click)="modalDelete.show()"
+                  (click)="deleteItem(modality)">Eliminar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Editar-->
+<div bsModal #modalEdit="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalEditLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-warning" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Editar Modalidad</h4>
+        <button type="button" class="close" (click)="modalEdit.hide()" aria-label="Close" #closeEditModal>
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="" #editForm="ngForm">
+          <div class="form-group">
+            <label for="editName">Nombre</label>
+            <input type="text" class="form-control" id="editName" placeholder="Ingresa el nombre.." name="editName"
+              #editName="ngModel" [(ngModel)]="modalityInfo.name" required pattern="[a-zA-Z ]*" maxlength="50"
+              [class.is-invalid]="!editName.valid && editName.touched">
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="editSelectDance">Danza</label>
+            <select id="selectEstado" class="form-control" name="editSelectDance" #editSelectDance="ngModel"
+              [(ngModel)]="modalityInfo.dance" required [class.is-invalid]="!editSelectDance.valid">
+              <option [ngValue]="Infantil">Infantil</option>
+              <option [ngValue]="Jazz">Jazz</option>
+              <option [ngValue]="Arabe">Arabe</option>
+              <option [ngValue]="Clasico">Clasico</option>
+              <option [ngValue]="RitmosLatinos">Ritmos Latinos</option>
+            </select>
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="editSelectTipoModalidad">Tipo Modalidad</label>
+            <ng-select [(ngModel)]="modalityInfo.type._id" name="editTipoModalidad">
+              <ng-option *ngFor="let tipoModality of tipoModalitys" [value]="tipoModality._id"
+                placeholder="Selecciona un tipo de modalidad">
+                {{tipoModality.type}}, Precio: {{tipoModality.price}}</ng-option>
+            </ng-select>
+          </div>
+          <div class="form-group">
+            <label for="editYear">Año</label>
+            <input type="text" placeholder="Ańo de curso" class="form-control" name="editYear" #editYear="ngModel"
+              [(ngModel)]="modalityInfo.year" required autocomplete="false"
+              [class.is-invalid]="!editYear.valid && editYear.touched" bsDatepicker
+              [bsConfig]="{ dateInputFormat: 'YYYY/MM/DD' }" placement="bottom">
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="editSelectEstado">Estado</label>
+            <select id="editSelectEstado" name="editSelectEstado" class="form-control" name="editSelectEstado"
+              #editSelectEstado="ngModel" [(ngModel)]="modalityInfo.state" required
+              [class.is-invalid]="!editSelectEstado.valid">
+              <option [ngValue]="true">Activo</option>
+              <option [ngValue]="false">Inactivo</option>
+            </select>
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="Profesor">Profesor/es</label>
+            <ng-select [(ngModel)]="modalityInfo.teachers._id" name="Profesor">
+              <ng-option *ngFor="let user of users" [value]="user._id"
+                placeholder="Selecciona uno o varios profesores..">
+                {{user.name}} {{user.surname}}</ng-option>
+            </ng-select>
+          </div>
+          <alert type="danger" *ngIf="status == 'err' && message">
+            {{message}}
+          </alert>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modalEdit.hide()">Cerrar</button>
+        <button type="button" class="btn btn-warning" (click)="update()" [disabled]="!editForm.form.valid">Guardar
+          cambios</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+
+<!-- Modal Info-->
+<div bsModal #modalInfo="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalInfoLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-info" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Información Modalidad</h4>
+        <button type="button" class="close" (click)="modalInfo.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="bd-example">
+          <dl class="row">
+            <dt class="col-sm-3">Nombre:</dt>
+            <dd class="col-sm-9">
+              <p> {{ modalityInfo.name }}</p>
+            </dd>
+            <dt class="col-sm-3">Danza:</dt>
+            <dd class="col-sm-9">
+              <p> {{ modalityInfo.dance }}</p>
+            </dd>
+            <dt class="col-sm-3">Tipo de modalidad:</dt>
+            <dd class="col-sm-9">
+              <p> {{ modalityInfo.type.type }}</p>
+            </dd>
+            <dt class="col-sm-3">Precio:</dt>
+            <dd class="col-sm-9">
+              <p> {{ modalityInfo.type.price | currency }}</p>
+            </dd>
+            <dt class="col-sm-3">Año:</dt>
+            <dd class="col-sm-9">
+              <p> {{ modalityInfo.year | date: 'yyyy'}}</p>
+            </dd>
+            <dt class="col-sm-3">Estado:</dt>
+            <dd class="col-sm-9">
+              <p *ngIf="modalityInfo.state"> Activo </p>
+              <p *ngIf="!modalityInfo.state"> Inactivo </p>
+            </dd>
+            <dt class="col-sm-3">Profesor/es:</dt>
+            <dd class="col-sm-9">
+              <p *ngFor="let teacher of modalityInfo.teachers">{{ teacher.name }} {{ teacher.surname }}
+              </p>
+            </dd>
+          </dl>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modalInfo.hide()">Cerrar</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+
+<!-- Modal Agregar-->
+<div bsModal #modalNew="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalNewLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-success" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Nueva Modalidad</h4>
+        <button type="button" class="close" (click)="modalNew.hide()" aria-label="Close" #closeNewModal>
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="" #newForm="ngForm">
+          <div class="form-group">
+            <label for="Nombre">Nombre</label>
+            <input type="text" class="form-control" id="Nombre" placeholder="Ingresa el nombre.." name="name"
+              #name="ngModel" [(ngModel)]="modalityNew.name" required pattern="[a-zA-Z ]*" maxlength="50"
+              [class.is-invalid]="!name.valid && name.touched">
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <!--
+          <div class="form-group">
+            <label for="selectDanceee">Danza</label>
+            <select id="selectDanceee" class="form-control" name="selectDance" #selectDance="ngModel"
+              [(ngModel)]="modalityNew.dance" required [class.is-invalid]="!selectDance.valid">
+              <option [ngValue]="Infantil">Infantil</option>
+              <option [ngValue]="Jazz">Jazz</option>
+              <option [ngValue]="Arabe">Arabe</option>
+              <option [ngValue]="Clasico">Clasico</option>
+              <option [ngValue]="RitmosLatinos">Ritmos Latinos</option>
+            </select>
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+           -->
+          <div class="form-group">
+            <label for="Dance">Danza</label>
+            <ng-select [items]="danzas" [(ngModel)]="modalityNew.dance" name="Dance" required>
+            </ng-select>
+          </div>
+          <div class="form-group">
+            <label for="Padre">Tipo Modalidad</label>
+            <ng-select [(ngModel)]="modalityNew.type" name="padre">
+              <ng-option *ngFor="let tipoModality of tipoModalitysActives" [value]="tipoModality._id"
+                placeholder="Selecciona un tipo de modalidad">
+                {{tipoModality.type}}, Precio: {{tipoModality.price | currency}}</ng-option>
+            </ng-select>
+          </div>
+          <div class="form-group">
+            <label for="newBirthDate">Año</label>
+            <input type="text" placeholder="Ańo de curso" class="form-control" name="newYear" #newYear="ngModel"
+              [(ngModel)]="modalityNew.year" required autocomplete="false"
+              [class.is-invalid]="!newYear.valid && newYear.touched" [bsConfig]="bsConfig" #dp="bsDatepicker"
+              bsDatepicker placement="bottom">
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="selectEstado">Estado</label>
+            <select id="selectEstado" class="form-control" name="state" #state="ngModel" [(ngModel)]="modalityNew.state"
+              required [class.is-invalid]="!state.valid">
+              <option [ngValue]="true">Activo</option>
+              <option [ngValue]="false">Inactivo</option>
+            </select>
+            <div class="invalid-feedback">
+              Por favor ingresa informacion valida.
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="Profesor">Profesor/es</label>
+            <ng-select [(ngModel)]="modalityNew.teachers" name="Profesor" [multiple]="true" [closeOnSelect]="false">
+              <ng-option *ngFor="let user of usersActive" [value]="user._id"
+                placeholder="Selecciona uno o varios profesores..">
+                {{user.name}} {{user.surname}}</ng-option>
+            </ng-select>
+          </div>
+          <alert type="danger" *ngIf="status == 'err' && message">
+            {{message}}
+          </alert>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modalNew.hide()">Cerrar</button>
+        <button type="button" class="btn btn-success" (click)="add()" [disabled]="!newForm.form.valid">Agregar
+          Modalidad</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+
+<div bsModal #modalDelete="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="deleteModal"
+  aria-hidden="true">
+  <div class="modal-dialog modal-danger" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Eliminar Modalidad</h4>
+        <button type="button" class="close" (click)="modalDelete.hide()" aria-label="Close" #closeDeleteModal>
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Seguro quieres eliminar la modalidad: {{ modalityDelete.name }}?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modalDelete.hide()">Cerrar</button>
+        <button type="button" class="btn btn-danger" (click)="delete()">Eliminar Modalidad</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>

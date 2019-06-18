@@ -75,7 +75,6 @@ export class TipoModalidadesComponent implements OnInit, OnDestroy {
         } else {
           this.tipoModalitys = response.tipoModalitys;
           this.dtTrigger.next();
-          this.closeModalNew();
         }
       },
       err => {
