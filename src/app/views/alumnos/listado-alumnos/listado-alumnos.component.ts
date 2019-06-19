@@ -25,7 +25,7 @@ export class ListadoAlumnosComponent implements OnInit, OnDestroy {
   public status;
   public message;
   public father = new Father('', '', '', '', '', '', '', null);
-  public student = new Student('', '', '', null, '', '', this.father, true , '', null);
+  public student = new Student('', '', '', null, '', '', null, true , 'Femenino', null);
 
   // Estas declaraciones son para el datatable
   dtOptions: DataTables.Settings = {};
@@ -138,7 +138,7 @@ export class ListadoAlumnosComponent implements OnInit, OnDestroy {
   // Resetea los datos del alumno para que no se muestren en el modal
   resetStudent() {
     this.father = new Father('', '', '', '', '', '', '', null);
-    this.student = new Student('', '', '', null, '', '', this.father, true, '', null);
+    this.student = new Student('', '', '', null, '', '', null, true, 'Femenino', null);
   }
 
   // Agrega un nuevo estudiante!

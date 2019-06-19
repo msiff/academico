@@ -59,4 +59,12 @@ export class StudentService {
         return this._http.get(this.url + 'getStudentsActive', { headers: headers }).pipe(map(res => res.json()));
     }
 
+    // Obtiene un int con el numero de archivos
+    countStudents() {
+        // user lleva el usuario que esta logueado al momento de hacer la peticion, para poder dejar registro en el sv.
+        const user = JSON.stringify(this.getIdentity());
+        const headers = new Headers({ 'Content-Type': 'application/json', 'Authorization': user });
+        return this._http.get(this.url + 'countStudents', { headers: headers }).pipe(map(res => res.json()));
+    }
+
 }

@@ -19,7 +19,7 @@ export class UsuariosComponent implements OnInit, OnDestroy {
   public status;
   public message;
   public userInfo = new User('', '', '', '', '', '', false, null);
-  public newUser = new User('', '', '', '', '', '', false, null);
+  public newUser = new User('', '', '', '', '', 'teacher', true, null);
   // Estas declaraciones son para el datatable
   dtOptions: DataTables.Settings = {};
   dtTrigger: Subject<User> = new Subject();
@@ -168,7 +168,7 @@ export class UsuariosComponent implements OnInit, OnDestroy {
         } else {
           this.agregarAlerta('success', response.message);
           this.getUsersRerender();
-          this.newUser = new User('', '', '', '', '', '', false, null);
+          this.newUser = new User('', '', '', '', '', 'teacher', true, null);
           this.closeModalNewUser();
         }
       },
@@ -185,7 +185,7 @@ export class UsuariosComponent implements OnInit, OnDestroy {
 
   // reset new user, para vaciar los campos del nuevo usuario.
   resetNewUser() {
-    this.newUser = new User('', '', '', '', '', '', false, null);
+    this.newUser = new User('', '', '', '', '', 'teacher', true, null);
     this.status = '';
     this.message = '';
   }

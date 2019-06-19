@@ -65,4 +65,12 @@ export class ModalityService {
         return this._http.get(this.url + 'getModalitysActive', { headers: headers }).pipe(map(res => res.json()));
     }
 
+    // Obtiene el numero de modalidades, totales y activas
+    modalityCount() {
+        // user lleva el usuario que esta logueado al momento de hacer la peticion, para poder dejar registro en el sv.
+        const user = JSON.stringify(this.getIdentity());
+        const headers = new Headers({ 'Content-Type': 'application/json', 'Authorization': user });
+        return this._http.get(this.url + 'modalityCount', { headers: headers }).pipe(map(res => res.json()));
+    }
+
 }
