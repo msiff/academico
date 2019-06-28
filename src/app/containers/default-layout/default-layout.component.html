@@ -38,7 +38,7 @@
       </a>
       <div class="dropdown-menu dropdown-menu-right" *dropdownMenu aria-labelledby="simple-dropdown">
         <div class="dropdown-header text-center"><strong>Opciones</strong></div>
-        <a class="dropdown-item" href="#" *ngIf="identity.role === 'admin'"><i class="fa fa-wrench"></i> Opciones</a>
+        <a class="dropdown-item" href="#" *ngIf="identity.role === 'admin'" routerLink="/administracion/opciones"><i class="fa fa-wrench"></i> Opciones</a>
         <div class="divider"></div>
         <a class="dropdown-item" href="#" (click)="logout()"><i class="fa fa-lock"></i> Cerrar Sesion </a>
       </div>
@@ -59,7 +59,7 @@
       <li class="breadcrumb-menu d-md-down-none">
         <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
           <a class="btn" [routerLink]="['/dashboard']"><i class="icon-graph"></i> &nbsp;Home</a>
-          <a class="btn" href="#" *ngIf="identity.role === 'admin'" ><i class="icon-settings"></i> &nbsp;Opciones</a>
+          <a class="btn" href="#" *ngIf="identity.role === 'admin'" routerLink="/administracion/opciones"><i class="icon-settings"></i> &nbsp;Opciones</a>
         </div>
       </li>
     </cui-breadcrumb>

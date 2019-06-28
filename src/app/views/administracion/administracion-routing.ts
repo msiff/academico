@@ -3,6 +3,10 @@ import { Routes, RouterModule } from '@angular/router';
 
 // componentes
 import { UsuariosComponent } from './usuarios/usuarios.component';
+import { OptionsComponent } from './options/options.component';
+
+// Guards
+import { AdminGuard } from '../../services/admin.guard';
 
 const routes: Routes = [
     {
@@ -21,6 +25,14 @@ const routes: Routes = [
                 data: {
                     title: 'Usuarios'
                 }
+            },
+            {
+                path: 'opciones',
+                component: OptionsComponent,
+                data: {
+                    title: 'Opciones'
+                },
+                canActivate: [AdminGuard]
             }
         ]
     }

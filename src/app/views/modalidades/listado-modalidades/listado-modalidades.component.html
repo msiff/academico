@@ -35,7 +35,7 @@
               <th>Tipo</th>
               <th>Precio</th>
               <th>Año</th>
-              <th>Profesor/es</th>
+              <th class="text-center" >Profesor/es</th>
               <th>Estado</th>
               <th class="text-center">Acciones</th>
             </tr>
@@ -47,7 +47,7 @@
               <td>{{ modality.type.type }}</td>
               <td>{{ modality.type.price | currency }}</td>
               <td>{{ modality.year | date : 'yyyy'}}</td>
-              <td>{{ modality.teachers.length }}</td>
+              <td class="text-center" >{{ modality.teachers.length }}</td>
               <td *ngIf="modality.state">Activo</td>
               <td *ngIf="!modality.state">Inactivo</td>
               <td class="text-center">
